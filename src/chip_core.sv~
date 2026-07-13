@@ -1,0 +1,302 @@
+// SPDX-FileCopyrightText: © 2025 XXX Authors
+// SPDX-License-Identifier: Apache-2.0
+
+`default_nettype none
+
+module chip_core #(
+    parameter NUM_INPUT_PADS,
+    parameter NUM_BIDIR_PADS,
+    parameter NUM_ANALOG_PADS
+    )(
+    `ifdef USE_POWER_PINS
+    inout  wire VDD,
+    inout  wire VSS,
+    `endif
+    
+    input  wire clk,       // clock
+    input  wire rst_n,     // reset (active low)
+    
+    input  wire [NUM_INPUT_PADS-1:0] input_in,   // Input value
+    output wire [NUM_INPUT_PADS-1:0] input_pu,   // Pull-up
+    output wire [NUM_INPUT_PADS-1:0] input_pd,   // Pull-down
+
+    input  wire [NUM_BIDIR_PADS-1:0] bidir_in,   // Input value
+    output wire [NUM_BIDIR_PADS-1:0] bidir_out,  // Output value
+    output wire [NUM_BIDIR_PADS-1:0] bidir_oe,   // Output enable
+    output wire [NUM_BIDIR_PADS-1:0] bidir_cs,   // Input type (0=CMOS Buffer, 1=Schmitt Trigger)
+    output wire [NUM_BIDIR_PADS-1:0] bidir_sl,   // Slew rate (0=fast, 1=slow)
+    output wire [NUM_BIDIR_PADS-1:0] bidir_ie,   // Input enable
+    output wire [NUM_BIDIR_PADS-1:0] bidir_pu,   // Pull-up
+    output wire [NUM_BIDIR_PADS-1:0] bidir_pd,   // Pull-down
+
+    inout  wire [NUM_ANALOG_PADS-1:0] analog  // Analog
+);
+
+    // See here for usage: https://gf180mcu-pdk.readthedocs.io/en/latest/IPs/IO/gf180mcu_fd_io/digital.html
+    
+    // Disable pull-up and pull-down for input
+    assign input_pu = '0;
+    assign input_pd = '0;
+
+    // Set the bidir as output
+    assign bidir_oe = '1;
+    assign bidir_cs = '0;
+    assign bidir_sl = '0;
+    assign bidir_ie = ~bidir_oe;
+    assign bidir_pu = '0;
+    assign bidir_pd = '0;
+    
+    logic _unused;
+    assign _unused = &bidir_in;
+
+    logic [NUM_BIDIR_PADS-1:0] count;
+
+    always_ff @(posedge clk) begin
+        if (!rst_n) begin
+            count <= '0;
+        end else begin
+            if (&input_in) begin
+                count <= count + 1;
+            end
+        end
+    end
+
+    logic [7:0] sram_0_out;
+    logic [7:0] sram_1_out;
+    logic [7:0] sram_2_out;
+    logic [7:0] sram_3_out;
+    logic [7:0] sram_4_out;
+    logic [7:0] sram_5_out;
+    logic [7:0] sram_6_out;
+    logic [7:0] sram_7_out;
+
+/************************************
+    `gf180mcu_xxx_ip_sram__sram512x8m8wm1 sram_0 (
+        `ifdef USE_POWER_PINS
+        .VDD  (VDD),
+        .VSS  (VSS),
+        `endif
+
+        .CLK  (clk),
+        .CEN  (1'b1),
+        .GWEN (1'b0),
+        .WEN  (8'b0),
+        .A    ('0),
+        .D    ('0),
+        .Q    (sram_0_out)
+    );
+
+    `gf180mcu_xxx_ip_sram__sram512x8m8wm1 sram_1 (
+        `ifdef USE_POWER_PINS
+        .VDD  (VDD),
+        .VSS  (VSS),
+        `endif
+
+        .CLK  (clk),
+        .CEN  (1'b1),
+        .GWEN (1'b0),
+        .WEN  (8'b0),
+        .A    ('0),
+        .D    ('0),
+        .Q    (sram_1_out)
+    );
+
+    `gf180mcu_xxx_ip_sram__sram512x8m8wm1 sram_2 (
+        `ifdef USE_POWER_PINS
+        .VDD  (VDD),
+        .VSS  (VSS),
+        `endif
+
+        .CLK  (clk),
+        .CEN  (1'b1),
+        .GWEN (1'b0),
+        .WEN  (8'b0),
+        .A    ('0),
+        .D    ('0),
+        .Q    (sram_2_out)
+    );
+
+    `gf180mcu_xxx_ip_sram__sram512x8m8wm1 sram_3 (
+        `ifdef USE_POWER_PINS
+        .VDD  (VDD),
+        .VSS  (VSS),
+        `endif
+
+        .CLK  (clk),
+        .CEN  (1'b1),
+        .GWEN (1'b0),
+        .WEN  (8'b0),
+        .A    ('0),
+        .D    ('0),
+        .Q    (sram_3_out)
+    );
+
+    `gf180mcu_xxx_ip_sram__sram512x8m8wm1 sram_4 (
+        `ifdef USE_POWER_PINS
+        .VDD  (VDD),
+        .VSS  (VSS),
+        `endif
+
+        .CLK  (clk),
+        .CEN  (1'b1),
+        .GWEN (1'b0),
+        .WEN  (8'b0),
+        .A    ('0),
+        .D    ('0),
+        .Q    (sram_4_out)
+    );
+
+    `gf180mcu_xxx_ip_sram__sram512x8m8wm1 sram_5 (
+        `ifdef USE_POWER_PINS
+        .VDD  (VDD),
+        .VSS  (VSS),
+        `endif
+
+        .CLK  (clk),
+        .CEN  (1'b1),
+        .GWEN (1'b0),
+        .WEN  (8'b0),
+        .A    ('0),
+        .D    ('0),
+        .Q    (sram_5_out)
+    );
+
+    `gf180mcu_xxx_ip_sram__sram512x8m8wm1 sram_6 (
+        `ifdef USE_POWER_PINS
+        .VDD  (VDD),
+        .VSS  (VSS),
+        `endif
+
+        .CLK  (clk),
+        .CEN  (1'b1),
+        .GWEN (1'b0),
+        .WEN  (8'b0),
+        .A    ('0),
+        .D    ('0),
+        .Q    (sram_6_out)
+    );
+
+    `gf180mcu_xxx_ip_sram__sram512x8m8wm1 sram_7 (
+        `ifdef USE_POWER_PINS
+        .VDD  (VDD),
+        .VSS  (VSS),
+        `endif
+
+        .CLK  (clk),
+        .CEN  (1'b1),
+        .GWEN (1'b0),
+        .WEN  (8'b0),
+        .A    ('0),
+        .D    ('0),
+        .Q    (sram_7_out)
+    );
+
+    assign bidir_out =  count ^ {8'd0, sram_3_out, sram_2_out, sram_1_out, sram_0_out} ^ {8'd0, sram_7_out, sram_6_out, sram_5_out, sram_4_out};
+
+****************************/
+
+	// inputs for picorv
+	wire mem_ready;
+	wire [31:0] mem_rdata;
+	wire pico_pcpi_wr_w;
+	wire [31:0] pico_pcpi_rd_w;
+	wire pico_pcpi_wait_w;
+	wire pico_pcpi_ready_w;
+
+
+	wire [31:0] pico_irq;
+
+	// outputs for picorv
+	wire mem_valid;
+	wire mem_instr;
+	wire [31:0] mem_addr;
+	wire [31:0] mem_wdata;
+	wire [ 3:0] mem_wstrb;
+	wire pico_mem_la_read_w;
+	wire pico_mem_la_write_w;
+	wire [31:0] pico_mem_la_addr_w;
+	wire [31:0] pico_mem_la_wdata_w;
+	wire [ 3:0] pico_mem_la_wstrb_w;
+	wire pico_pcpi_valid_w;
+	wire [31:0] pico_pcpi_insn_w;
+	wire [31:0] pico_pcpi_rs1_w;
+	wire [31:0] pico_pcpi_rs2_w;
+	wire pico_trace_valid_w;
+	wire [35:0] pico_trace_data_w;
+	wire [31:0] irq_eoi_o_wide;
+	wire trap;
+
+	// stub inputs
+	assign mem_ready = 1'b1;
+	assign mem_rdata = 32'b0;
+	assign pico_pcpi_wr_w = 1'b0;
+	assign pico_pcpi_rd_w = 32'b0;
+	assign pico_pcpi_wait_w = 1'b1;
+	assign pico_pcpi_ready_w = 1'b1;
+	assign pico_irq = 32'b0;
+
+
+    picorv32 #(
+    ) cpu (
+        .clk       (clk), 			// input
+        .resetn    (rst_n),			// input 
+        .mem_valid (mem_valid),		// output reg
+        .mem_instr (mem_instr),		// output reg
+        .mem_ready (mem_ready),		// input
+        .mem_addr  (mem_addr),		// output reg [31:0]
+        .mem_wdata (mem_wdata),		// output reg [31:0]
+        .mem_wstrb (mem_wstrb),		// output reg [ 3:0]
+        .mem_rdata (mem_rdata),		// input      [31:0]
+        .mem_la_read  (pico_mem_la_read_w), 	// output
+        .mem_la_write (pico_mem_la_write_w), 	// output
+        .mem_la_addr  (pico_mem_la_addr_w), 	// output [31:0]
+        .mem_la_wdata (pico_mem_la_wdata_w), 	// output reg [31:0]
+        .mem_la_wstrb (pico_mem_la_wstrb_w), 	// output reg [3:0]
+        .pcpi_valid  (pico_pcpi_valid_w),		// output reg
+        .pcpi_insn   (pico_pcpi_insn_w),		// output reg [31:0]
+        .pcpi_rs1    (pico_pcpi_rs1_w),			// output [31:0]
+        .pcpi_rs2    (pico_pcpi_rs2_w),			// output [31:0]
+        .pcpi_wr     (pico_pcpi_wr_w),			// input
+        .pcpi_rd     (pico_pcpi_rd_w),			// input [31:0]
+        .pcpi_wait   (pico_pcpi_wait_w),		// input
+        .pcpi_ready  (pico_pcpi_ready_w),		// input
+        .trace_valid (pico_trace_valid_w),		// output
+        .trace_data  (pico_trace_data_w),		// output reg [35:0] 
+        .irq         (pico_irq), 			// input [31:0]
+        .eoi         (irq_eoi_o_wide),			// output reg [31:0]
+        .trap        (trap) 					// output reg
+    );
+
+
+	// SRAM inputs
+	wire sram_sel;
+	wire [ 3:0] wstrb;
+	wire [31:0] addr;
+	wire [31:0] wdata;
+
+	// SRAM outputs
+	wire sram_ready;
+	wire [31:0] rdata;
+
+	// SRAM assign statements
+	assign sram_sel = 1'b0;
+	assign wstrb = 4'b0;
+	assign addr = 32'b0;
+	assign wdata = 32'b0;
+
+
+    simple_sram #(
+    ) sram (
+        .clk   (clk),
+        .resetn(rst_n),
+        .valid (sram_sel), //input
+        .ready (sram_ready), // output
+        .wstrb (mem_wstrb),
+        .addr  (mem_addr),
+        .wdata (mem_wdata),
+        .rdata (sram_rdata)
+    );
+
+endmodule
+
+`default_nettype wire
