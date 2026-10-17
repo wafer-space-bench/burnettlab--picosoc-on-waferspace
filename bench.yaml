@@ -1,0 +1,26 @@
+source:
+  url: https://github.com/burnettlab/picosoc-on-waferspace
+  original_url: https://github.com/d-burnett/picosoc-on-waferspace
+  kind: fork
+  why: GitHub fork of the upstream repository
+  licence: Apache-2.0
+  upstream_default_branch: main
+tapeouts:
+- org: wafer.space
+  run: ws-run2
+  slot: PSOC
+  project: Simplest possible PicoSoC implementation using wafer.space flow
+  size: 1x0p5
+  kind: digital
+  commit: a5283bc607b0
+  commit_source: design_ref head recorded by the ws-run1/2 audit
+  tag: wafer.space/ws-run2/PSOC
+  branch: tapeout/wafer.space/ws-run2/PSOC
+  page: https://wafer.space/ws-run2/
+generated: '2026-10-17T23:26:37Z'
+tooling: https://github.com/wafer-space/wafer.space-bench
+index: https://wafer-space-bench.github.io
+branches:
+- about
+- tapeout/wafer.space/ws-run2/PSOC
+- upstream/main
